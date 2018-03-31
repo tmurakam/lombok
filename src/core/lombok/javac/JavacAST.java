@@ -35,6 +35,8 @@ import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
+import com.sun.tools.javac.resources.CompilerProperties;
+import com.sun.tools.javac.util.JCDiagnostic;
 import lombok.core.AST;
 
 import com.sun.tools.javac.code.Source;
@@ -552,45 +554,27 @@ public class JavacAST extends AST<JavacAST, JavacNode, JCTree> {
 	}
 	
 	static class Jdk9Plus extends ErrorLog {
-		private Object multiple;
-		private Method logMethod;
-		
 		private Jdk9Plus(Log log, Messager messager, Field errorCount, Field warningCount) {
 			super(log, messager, errorCount, warningCount);
-
-			Object multiple = null;
-			Method logMethod = null;
-			try {
-				Class<?> df = Class.forName("com.sun.tools.javac.util.JCDiagnostic$DiagnosticFlag");
-				for (Object constant : df.getEnumConstants()) {
-					if (constant.toString().equals("MULTIPLE")) multiple = constant;
-				}
-				logMethod = log.getClass().getMethod("error", new Class<?>[] {df, DiagnosticPosition.class, String.class, Object[].class});
-			} catch (Throwable t) {}
-
-			this.multiple = multiple;
-			this.logMethod = logMethod;
 		}
 		
 		@Override void error1(DiagnosticPosition pos, String message) {
-			try {
-				logMethod.invoke(log, multiple, pos, "proc.messager", new Object[] { message });
-			} catch (Throwable t) {}
+			log.error(JCDiagnostic.DiagnosticFlag.MULTIPLE, pos, CompilerProperties.Errors.ProcMessager(message));
 		}
 
 		@Override
 		void warning1(DiagnosticPosition pos, String message) {
-			// TODO:
+			log.warning(pos, CompilerProperties.Warnings.ProcMessager(message));
 		}
 
 		@Override
 		void mandatoryWarning1(DiagnosticPosition pos, String message) {
-			// TODO:
+			log.mandatoryWarning(pos, CompilerProperties.Warnings.ProcMessager(message));
 		}
 
 		@Override
 		void note(DiagnosticPosition pos, String message) {
-			// TODO:
+			log.note(pos, CompilerProperties.Notes.ProcMessager(message));
 		}
 	}
 }
