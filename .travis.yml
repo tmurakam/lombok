@@ -1,0 +1,6 @@
+language: java
+install:
+script: ant dist -Dant.java.version=9
+
+jdk:
+  - oraclejdk9
