@@ -2,7 +2,7 @@ language: java
 install:
 script:
   - ant dist -Dant.java.version=9
-  - mvn install:install-file -Dfile=dist/lombok-1.16.21.jar -DgroupId=org.projectlombok -DartifactId=lombok -Dversion=1.16.21 -Dpackaging=jar
+  - mvn install:install-file -Dfile=dist/lombok-1.16.23.jar -DgroupId=org.projectlombok -DartifactId=lombok -Dversion=1.16.23 -Dpackaging=jar
   - mkdir -p repo/org/projectlombok && cp -r ~/.m2/repository/org/projectlombok/* repo/org/projectlombok/
 
 jdk:
